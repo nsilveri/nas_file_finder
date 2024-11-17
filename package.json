@@ -2,6 +2,7 @@
 	"name": "tauri2-svelte5-boilerplate",
 	"version": "1.0.0",
 	"type": "module",
+	"license": "MIT",
 	"scripts": {
 		"dev": "vite dev",
 		"build": "vite build",

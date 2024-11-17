@@ -1,6 +1,6 @@
 {
   "extends": ["config:recommended", "group:all", "schedule:weekly", ":widenPeerDependencies"],
-  "enabledManagers": ["cargo", "github-actions", "npm"],
+  "enabledManagers": ["cargo", "github-actions", "bun"],
   "packageRules": [
     {
       "matchUpdateTypes": ["patch"],
