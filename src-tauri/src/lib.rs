@@ -14,7 +14,7 @@ pub fn run() {
       }
       Ok(())
     })
-    .invoke_handler(tauri::generate_handler![greet, search_files, test_connection, open_directory])
+    .invoke_handler(tauri::generate_handler![greet, search_files, test_connection, open_directory, get_configurations, update_configuration])
     .run(tauri::generate_context!())
     .expect("error while running tauri application");
 }

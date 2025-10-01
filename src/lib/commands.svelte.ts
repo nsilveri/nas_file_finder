@@ -21,6 +21,14 @@ export interface DatabaseConfig {
 	database: string;
 }
 
+export interface Configuration {
+	id: number;
+	key: string;
+	value: string;
+	description: string | null;
+	updated_at: string;
+}
+
 export class GlobalState {
 	private _state = $state({ name: '', greet: '' });
 
@@ -248,5 +256,79 @@ export class SettingsState {
 		this.config = { ...DEFAULT_CONFIG };
 		this.saveConfig();
 		this.connectionStatus = 'unknown';
+	}
+}
+
+export class ConfigurationState {
+	private _state = $state({
+		configurations: [] as Configuration[],
+		isLoading: false,
+		isSaving: false,
+		error: ''
+	});
+
+	get configurations() {
+		return this._state.configurations;
+	}
+	set configurations(value: Configuration[]) {
+		this._state.configurations = value;
+	}
+
+	get isLoading() {
+		return this._state.isLoading;
+	}
+	set isLoading(value: boolean) {
+		this._state.isLoading = value;
+	}
+
+	get isSaving() {
+		return this._state.isSaving;
+	}
+	set isSaving(value: boolean) {
+		this._state.isSaving = value;
+	}
+
+	get error() {
+		return this._state.error;
+	}
+	set error(value: string) {
+		this._state.error = value;
+	}
+
+	async loadConfigurations(dbConfig: DatabaseConfig) {
+		this.isLoading = true;
+		this.error = '';
+		try {
+			const configs = await invoke<Configuration[]>('get_configurations', { dbConfig });
+			this.configurations = configs;
+		} catch (err) {
+			this.error = err as string;
+		} finally {
+			this.isLoading = false;
+		}
+	}
+
+	async updateConfiguration(dbConfig: DatabaseConfig, key: string, value: string) {
+		this.isSaving = true;
+		this.error = '';
+		try {
+			await invoke('update_configuration', { dbConfig, key, value });
+			// Ricarica le configurazioni
+			await this.loadConfigurations(dbConfig);
+		} catch (err) {
+			this.error = err as string;
+		} finally {
+			this.isSaving = false;
+		}
+	}
+
+	getConfigurationValue(key: string): string {
+		const config = this.configurations.find(c => c.key === key);
+		return config?.value || '';
+	}
+
+	getConfigurationDescription(key: string): string {
+		const config = this.configurations.find(c => c.key === key);
+		return config?.description || '';
 	}
 }

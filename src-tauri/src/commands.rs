@@ -10,6 +10,15 @@ pub struct FileResult {
     pub last_modified: Option<String>,
 }
 
+#[derive(Debug, Serialize, Deserialize)]
+pub struct Configuration {
+    pub id: i32,
+    pub key: String,
+    pub value: String,
+    pub description: Option<String>,
+    pub updated_at: String,
+}
+
 #[derive(Debug, Deserialize)]
 pub struct DatabaseConfig {
     pub host: String,
@@ -187,5 +196,84 @@ pub fn open_directory(directory_path: String) -> Result<(), String> {
             .map_err(|e| format!("Failed to open directory: {}", e))?;
     }
     
+    Ok(())
+}
+
+#[tauri::command]
+pub async fn get_configurations(db_config: DatabaseConfig) -> Result<Vec<Configuration>, String> {
+    // Build connection string from config
+    let connection_string = format!(
+        "host={} port={} user={} password={} dbname={}",
+        db_config.host,
+        db_config.port,
+        db_config.user,
+        db_config.password,
+        db_config.database
+    );
+    
+    // Connect to the database
+    let (client, connection) = tokio_postgres::connect(&connection_string, NoTls)
+        .await
+        .map_err(|e| format!("Failed to connect to database: {}", e))?;
+
+    // Spawn the connection in a separate task
+    tokio::spawn(async move {
+        if let Err(e) = connection.await {
+            eprintln!("Connection error: {}", e);
+        }
+    });
+
+    let query = "SELECT id, key, value, description, updated_at FROM configurations ORDER BY key";
+    let rows = client
+        .query(query, &[])
+        .await
+        .map_err(|e| format!("Query error: {}", e))?;
+
+    let mut results = Vec::new();
+    for row in rows {
+        let config = Configuration {
+            id: row.get(0),
+            key: row.get(1),
+            value: row.get(2),
+            description: row.get(3),
+            updated_at: row.get::<_, chrono::NaiveDateTime>(4)
+                .format("%Y-%m-%d %H:%M:%S").to_string(),
+        };
+        results.push(config);
+    }
+
+    Ok(results)
+}
+
+#[tauri::command]
+pub async fn update_configuration(db_config: DatabaseConfig, key: String, value: String) -> Result<(), String> {
+    // Build connection string from config
+    let connection_string = format!(
+        "host={} port={} user={} password={} dbname={}",
+        db_config.host,
+        db_config.port,
+        db_config.user,
+        db_config.password,
+        db_config.database
+    );
+    
+    // Connect to the database
+    let (client, connection) = tokio_postgres::connect(&connection_string, NoTls)
+        .await
+        .map_err(|e| format!("Failed to connect to database: {}", e))?;
+
+    // Spawn the connection in a separate task
+    tokio::spawn(async move {
+        if let Err(e) = connection.await {
+            eprintln!("Connection error: {}", e);
+        }
+    });
+
+    let query = "UPDATE configurations SET value = $1, updated_at = CURRENT_TIMESTAMP WHERE key = $2";
+    client
+        .execute(query, &[&value, &key])
+        .await
+        .map_err(|e| format!("Update error: {}", e))?;
+
     Ok(())
 }

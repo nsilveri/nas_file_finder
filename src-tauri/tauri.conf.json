@@ -2,7 +2,7 @@
   "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
   "productName": "NAS File Finder",
   "version": "1.0.0",
-  "identifier": "com.nas-file-finder.dev",
+  "identifier": "com.nasfilefinder.dev",
   "build": {
     "frontendDist": "../build",
     "devUrl": "http://localhost:1420",
@@ -12,6 +12,7 @@
   "app": {
     "windows": [
       {
+        "label": "main",
         "title": "NAS File Finder",
         "width": 800,
         "height": 600,
@@ -23,6 +24,7 @@
       "csp": null
     }
   },
+  "plugins": {},
   "bundle": {
     "active": true,
     "targets": "all",
