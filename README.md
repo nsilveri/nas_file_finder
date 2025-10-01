@@ -11,8 +11,8 @@ Some useful links:
 
 ## Setup
 ```
-git clone https://github.com/alysonhower/tauri2-svelte5-boilerplate.git
-cd tauri2-svelte5-boilerplate
+git clone https://github.com/alysonhower/nas-file-finder.git
+cd nas-file-finder
 bun i
 ```
 ## Useful commands

@@ -13,6 +13,6 @@ export default {
 	plugins: [typography, forms, daisyui],
 
 	daisyui: {
-		themes: ['valentine']
+		themes: ['corporate']
 	}
 } as Config;

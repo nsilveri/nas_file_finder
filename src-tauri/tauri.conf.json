@@ -1,8 +1,8 @@
 {
   "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
-  "productName": "tauri2-svelte5-boilerplate",
+  "productName": "NAS File Finder",
   "version": "1.0.0",
-  "identifier": "com.tauri2-svelte5-boilerplace.dev",
+  "identifier": "com.nas-file-finder.dev",
   "build": {
     "frontendDist": "../build",
     "devUrl": "http://localhost:1420",
@@ -12,7 +12,7 @@
   "app": {
     "windows": [
       {
-        "title": "tauri2-svelte5-boilerplate",
+        "title": "NAS File Finder",
         "width": 800,
         "height": 600,
         "resizable": true,
