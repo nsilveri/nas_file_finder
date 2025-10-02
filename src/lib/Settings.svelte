@@ -1,4 +1,4 @@
-<script lang="ts">
+﻿<script lang="ts">
 	import { SettingsState, ConfigurationState, preventDefault } from '$lib';
 	import { onMount } from 'svelte';
 
@@ -80,7 +80,7 @@
 	// Get API base URL from localStorage backend_server IP
 	function getApiBaseUrl(): string {
 		const host = backendServerIP || settings.config.host || 'localhost';
-		return `http://${host}:5000`;
+		return `http://${host}:5050`;
 	}
 
 	function saveBackendServerIP(ip: string) {
@@ -543,12 +543,12 @@
 							<input
 								type="text"
 								value={backendServerIP}
-								placeholder="192.168.1.160"
+								placeholder="nas_ip_address"
 								class="input input-bordered w-full"
 								onchange={(e) => saveBackendServerIP(e.currentTarget.value)}
 							/>
 							<label class="label">
-								<span class="label-text-alt">Indirizzo IP del server backend (porta 5000). Salvato nell'applicazione.</span>
+								<span class="label-text-alt">Indirizzo IP del server backend (porta 5050). Salvato nell'applicazione.</span>
 							</label>
 						</div>
 
@@ -594,7 +594,7 @@
 						<div class="text-sm mb-2">
 							<strong>Suggerimenti:</strong>
 							<ul class="list-disc list-inside mt-2 space-y-1">
-								<li>Verifica che il backend Python sia avviato sulla porta 5000</li>
+								<li>Verifica che il backend Python sia avviato sulla porta 5050</li>
 								<li>Controlla che l'IP configurato ({getApiBaseUrl()}) sia corretto</li>
 								<li>Verifica che non ci siano firewall che bloccano la connessione</li>
 								<li>Assicurati che il backend abbia CORS abilitato per il frontend</li>
@@ -631,12 +631,52 @@
 								<input
 									type="text"
 									value={getApiConfigValue('nas_directory')}
-									placeholder="\\192.168.1.160\service\CLIENTI"
+									placeholder="\\nas_ip_address\subfolder"
 									class="input input-bordered w-full"
 									onchange={(e) => updateApiConfiguration('nas_directory', e.currentTarget.value)}
 								/>
 								<label class="label">
 									<span class="label-text-alt">{getApiConfigDescription('nas_directory')}</span>
+								</label>
+							</div>
+						{/if}
+
+						<!-- Database Host -->
+						{#if apiConfigurations.find(c => c.key === 'db_host')}
+							<div class="form-control">
+								<label class="label">
+									<span class="label-text font-medium">Host Database PostgreSQL</span>
+								</label>
+								<input
+									type="text"
+									value={getApiConfigValue('db_host')}
+									placeholder="nas_ip_address"
+									class="input input-bordered w-full"
+									onchange={(e) => updateApiConfiguration('db_host', e.currentTarget.value)}
+								/>
+								<label class="label">
+									<span class="label-text-alt">{getApiConfigDescription('db_host')}</span>
+								</label>
+							</div>
+						{/if}
+
+						<!-- Database Port -->
+						{#if apiConfigurations.find(c => c.key === 'db_port')}
+							<div class="form-control">
+								<label class="label">
+									<span class="label-text font-medium">Porta Database PostgreSQL</span>
+								</label>
+								<input
+									type="number"
+									value={getApiConfigValue('db_port')}
+									placeholder="5432"
+									min="1"
+									max="65535"
+									class="input input-bordered w-full"
+									onchange={(e) => updateApiConfiguration('db_port', e.currentTarget.value)}
+								/>
+								<label class="label">
+									<span class="label-text-alt">{getApiConfigDescription('db_port')}</span>
 								</label>
 							</div>
 						{/if}
